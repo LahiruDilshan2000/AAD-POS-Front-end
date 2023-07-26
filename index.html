@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='viewport' content='height=device-height, initial-scale=1.0'>
+    <meta charset="UTF-8">
+    <title>Point of Sale</title>
+    <link rel="icon" type="image/x-icone" href="assets/icons/icons8-monitor-64.ico">
+    <link rel="stylesheet" href="assets/styles/Styles.css">
+    <link rel="stylesheet" href="assets/fontsAwesome/css/all.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/styles/normalize.css">
+</head>
+<body>
+<header>
+    <div class="inner">
+        <h1 id="page-header">check</h1>
+        <div id="nav-button"></div>
+    </div>
+</header>
+<main>
+    <nav class="responsive-nav">
+        <ul>
+            <li><a href="#" id="r-dash">DashBoard</a></li>
+            <li><a href="#" id="r-cus">Customer</a></li>
+            <li><a href="#" id="r-itm">Item</a></li>
+            <li><a href="#" id="r-or">Order</a></li>
+            <li><a href="#" id="r-ord">Order Details</a></li>
+        </ul>
+    </nav>
+    <aside>
+        <h1 id="nav-h1">ur<span>ld.</span></h1>
+        <nav>
+            <ul>
+                <li><a href="#" id="dash">DashBoard</a></li>
+                <li><a href="#" id="cus">Customer</a></li>
+                <li><a href="#" id="itm">Item</a></li>
+                <li><a href="#" id="or">Order</a></li>
+                <li><a href="#" id="ord">Order Details</a></li>
+            </ul>
+        </nav>
+        <h3 id="nav-h3">Version 1.100025<br>urLahiruDila63@gmail.com</h3>
+    </aside>
+    <div id="template" class="template">
+        <!--------------------Dashboard Form--------------------------------->
+        <section class="dashMane">
+            <section class="dash row g-3 m-0" p-0>
+                <div class="col-md-3">
+                    <div class="dash-div">
+                        <h5>Today Orders</h5>
+                        <h6 id="todayOrders">55</h6>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dash-div">
+                        <h5>New Customers</h5>
+                        <h6 id="totalCustomer">10</h6>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dash-div">
+                        <h5>Monthly Income</h5>
+                        <h6>$ 4,562.5</h6>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dash-div">
+                        <h5>Today Earning</h5>
+                        <h6 id="todayIncome">$ 187.5</h6>
+                    </div>
+                </div>
+                <div class="col-12 mt-0 pt-4">
+                    <table class="table" id="orderDetailTbl">
+                        <thead>
+                        <th>Order ID</th>
+                        <th>Customer ID</th>
+                        <th>Customer Name</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+        <!--------------------Customer Form--------------------------------->
+        <section class="cusMane">
+            <form class="row g-3 myform ">
+                <div class="col-md-6">
+                    <label class="form-label">Customer ID</label>
+                    <input type="text" name="id" class="form-control" id="id" placeholder="C001">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Danapala">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Address</label>
+                    <input type="text" name="address" class="form-control" id="address" placeholder="1234 Main St">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Contact </label>
+                    <input type="tel" name="tel" class="form-control" id="tel" placeholder="+94 xxx xxxx">
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" id="cusSaveBtn">Save</button>
+                    <button type="button" class="btn btn-primary bg-info border-info" id="cusUpdateBtn">Update</button>
+                    <button type="button" class="btn btn-primary bg-danger border-danger" id="cusDeleteBtn">Delete
+                    </button>
+                </div>
+            </form>
+            <br>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2 was-validated search" type="search" placeholder="Search"
+                       aria-label="Search"
+                       id="cusSearch">
+                <button class="btn btn-outline-success" id="cusSearchBtn" type="button">Search</button>
+            </form>
+            <br>
+            <form class="row g-3 p-2">
+                <table class="table" id="customerTbl">
+                    <thead>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Customer Address</th>
+                    <th>Customer Contact</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </form>
+        </section>
+        <!--------------------Item Form--------------------------------->
+        <section class="itemMane">
+            <form class="row g-3 myform">
+                <div class="col-md-6">
+                    <label class="form-label">Item Code</label>
+                    <input type="text" class="form-control" id="itmCode" placeholder="R001">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-control" id="itmDes" placeholder="Any">
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Unit Price</label>
+                    <input type="text" class="form-control" id="unitPrice" placeholder="Rs 125.00">
+                </div>
+                <div class="col-6">
+                    <label class="form-label">Qty On Hand </label>
+                    <input type="tel" class="form-control" id="itmQty" placeholder="123">
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" id="itmSaveBtn">Save</button>
+                    <button type="button" class="btn btn-primary bg-info border-info" id="itmUpdateBtn">Update</button>
+                    <button type="button" class="btn btn-primary bg-danger border-danger" id="itmDeleteBtn">Delete
+                    </button>
+                </div>
+            </form>
+            <br>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2 was-validated search" type="search" placeholder="Search"
+                       aria-label="Search"
+                       id="itmSearch">
+                <button class="btn btn-outline-success" type="button" id="itmSearchBtn">Search</button>
+            </form>
+            <br>
+            <form class="row g-3 p-2">
+                <table class="table" id="itemTbl">
+                    <thead>
+                    <th>Item Code</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Qty On Hand</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </form>
+        </section>
+        <!--------------------Order Form--------------------------------->
+        <section class="orderMane">
+            <form class="row g-3 myform">
+                <div class="row col-12">
+                    <div class="col-3">
+                        <label class="form-label">Order ID</label>
+                        <label class="form-control" id="order_id">&nbsp;</label>
+                    </div>
+                    <div class="col-3">
+                        <label class="form-label">Date</label>
+                        <label class="form-control" id="date"></label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Customer ID</label>
+                    <select id="customerCmb" class="form-select">
+                        <option selected>Choose...</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Name</label>
+                    <label class="form-control" id="customer_name">&nbsp;</label>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Address</label>
+                    <label class="form-control" id="customer_address">&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Contact</label>
+                    <label class="form-control" id="customer_contact">&nbsp;</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Item Code</label>
+                    <select id="itemCodeCmb" class="form-select">
+                        <option selected>Choose...</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Description</label>
+                    <label class="form-control" id="des">&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Qty On Hand</label>
+                    <label class="form-control" id="qty_on_hand">&nbsp;</label>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Unit Price</label>
+                    <label class="form-control" id="unit_price">&nbsp;</label>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Qty</label>
+                    <div class="row">
+                        <div class="col-md-6" id="divQty">
+                            <input type="text" class="form-control" id="qty">
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary" id="orderAddBtn">Add</button>
+                            <button type="button" class="btn btn-primary bg-danger border-danger" id="orderDeleteBtn">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <br>
+            <form class="row g-3 p-2">
+                <table class="table" id="orderTbl">
+                    <thead>
+                    <th>Item Code</th>
+                    <th>Description</th>
+                    <th>Qty On Hand</th>
+                    <th>unit Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </form>
+            <form class="row p-5">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary w-25 position-absolute end-0 me-4 bg-success"
+                            id="placeOrderBtn">Place Order
+                    </button>
+                </div>
+            </form>
+        </section>
+        <!--------------------Recent Order Details Form--------------------------------->
+        <section class="orderDetailMane">
+            <div class="filter">
+                <div class="all-d">
+                    <form class="row g-3 details">
+                        <div class="row col-12">
+                            <div class="col-3">
+                                <label class="form-label">Order ID</label>
+                                <label class="form-control" id="recentOrder_id">&nbsp;</label>
+                            </div>
+                            <div class="col-3">
+                                <label class="form-label">Date</label>
+                                <label class="form-control" id="recentOrderDate"></label>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Customer ID</label>
+                                <label class="form-control" id="cusID">&nbsp;</label>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Name</label>
+                                <label class="form-control" id="cusName">&nbsp;</label>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="col-12 mt-4">
+                        <table class="table" id="recentTbl">
+                            <thead>
+                            <th>Item Code</th>
+                            <th>Item Des</th>
+                            <th>Unit price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <section class="dash row g-3 m-0">
+                <form class="d-flex" role="search">
+                    <input class="form-control was-validated search" type="search" placeholder="Search"
+                           aria-label="Search"
+                           id="rOrderSearch">
+                    <button class="btn btn-outline-success" type="button" id="rOrderSearchBtn">Search</button>
+                </form>
+                <div class="col-12 mt-4">
+                    <table class="table" id="recentOrderTbl">
+                        <thead>
+                        <th>Order ID</th>
+                        <th>Customer ID</th>
+                        <th>Customer Name</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Option</th>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </div>
+</main>
+<script src="assets/lib/jquery-3.6.4.min.js"></script>
+<script src="controller/MainController.js" type="module"></script>
+<script src="controller/DashBoardController.js" type="module"></script>
+<script src="controller/CustomerController.js" type="module"></script>
+<script src="controller/ItemController.js" type="module"></script>
+<script src="controller/OrderController.js" type="module"></script>
+<script src="controller/RecentOrderDetailsController.js" type="module"></script>
+<script src="db/DB.js" type="module"></script>
+<script>
+
+    var oldBtn;
+
+
+    let allHide = () => {
+        $('.dashMane').css({display: 'none'});
+        $('.cusMane').css({display: 'none'});
+        $('.itemMane').css({display: 'none'});
+        $('.orderMane').css({display: 'none'});
+        $('.orderDetailMane').css({display: 'none'});
+
+    }
+
+    let showContainer = (container, btn) => {
+
+        allHide();
+        $(container).css({display: 'block'});
+        //setStyle(btn);
+        oldBtn = id;
+    }
+    allHide();
+    $('.dashMane').css({display: 'block'});
+
+    ///loadHtmlFile('dashboard', 'dash');
+
+    function loadHtmlFile(file, id) {
+        setStyle(id);
+        $('#template').load('../view/' + file + '.html');
+        oldBtn = id;
+    }
+
+    function setStyle(id) {
+
+        if (oldBtn != undefined) {
+            $('#' + oldBtn).css({
+                background: "#dfe4ea",
+                color: "#485460",
+                boxShadow: "none"
+            });
+        }
+
+        $('#' + id).css({
+            background: "#0652DD",
+            color: "white",
+            boxShadow: "2px 2px 8px gray"
+        });
+    }
+</script>
+</body>
+</html>
