@@ -117,7 +117,6 @@ export class CustomerController {
                 "Content-Type": "application/json"
             },
             success: (resp) => {
-                console.log(resp);
                 this.handleAddData(resp.data);
             },
             error: (xhr) => {
@@ -197,7 +196,6 @@ export class CustomerController {
 
     handleGetMatch(newArray, text, cusArray){
 
-        console.log(text);
         cusArray.map(value => {
 
             value.id.toLowerCase().indexOf(text) !== -1 ? newArray.push(value) :
@@ -207,7 +205,6 @@ export class CustomerController {
                             undefined;
         });
         return newArray;
-
     }
 
     handleLReloadCustomerDetails() {

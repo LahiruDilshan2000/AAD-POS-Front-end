@@ -1,5 +1,4 @@
 import {Item} from "../models/Item.js";
-import {getAllDB, saveItemDB, updateItemDB, deleteItemDB} from "../db/DB.js";
 
 export class ItemController{
     constructor() {
@@ -10,7 +9,7 @@ export class ItemController{
             this.handleValidation("Update");
         });
         $('#itmDeleteBtn').on('click', () => {
-            this.handleValidation("Delete");
+            this.handleDeleteItem();
         });
         $('#itmSearchBtn').on('click', () => {
             this.handleSearchItem();
@@ -19,56 +18,108 @@ export class ItemController{
             this.handleSearchItem();
         });
         this.handleLReloadItemDetails();
-        this.handleLoadItem(getAllDB("ITEM"));
+        this.handleLoadItem();
         this.handleTableClickEvent();
     }
 
-    handleValidation(Function) {
+    handleValidation(fun) {
 
         !/^(R)([0-9]{2,})$/.test($('#itmCode').val()) ? alert("Invalid Item code") : !$('#itmDes').val() ? alert("Description is empty !") :
             !/\d+$/.test($('#unitPrice').val()) ? alert("Invalid unit price or empty !") : !/^\d+$/.test($('#itmQty').val()) ? alert("Invalid qty or empty !") :
-                Function === "Save" ? this.handleSaveItem() : Function === "Update" ? this.handleUpdateItem() :
-                    this.handleDeleteItem();
+                fun === "Save" ? this.handleSaveItem() : this.handleUpdateItem() ;
     }
 
     handleSaveItem(){
 
-        if (this.handleExistingItem()){
-            alert("Item code all ready exists !");
-            return;
-        }
-        saveItemDB(new Item($('#itmCode').val(), $('#itmDes').val(), $('#unitPrice').val(), $('#itmQty').val()));
+        let obj = JSON.stringify(new Item($('#itmCode').val(), $('#itmDes').val(), $('#unitPrice').val(), $('#itmQty').val()));
 
-        this.handleLoadItem(getAllDB("ITEM"));
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item",
+            type: "POST",
+            data: obj,
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                if (resp.status === 200){
+                    alert(resp.massage);
+                    this.handleLoadItem();
+                }else {
+                    alert(resp.data);
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
     }
 
     handleUpdateItem(){
 
-        updateItemDB(new Item($('#itmCode').val(), $('#itmDes').val(), $('#unitPrice').val(), $('#itmQty').val()));
+        let obj= JSON.stringify(new Item($('#itmCode').val(), $('#itmDes').val(), $('#unitPrice').val(), $('#itmQty').val()));
 
-        this.handleLoadItem(getAllDB("ITEM"));
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item",
+            type: "PUT",
+            data: obj,
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                if (resp.status === 200){
+                    alert(resp.massage);
+                    this.handleLoadItem();
+                }else {
+                    alert(resp.data);
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
     }
 
     handleDeleteItem(){
 
-        deleteItemDB(new Item($('#itmCode').val(), $('#itmDes').val(), $('#unitPrice').val(), $('#itmQty').val()));
-
-        this.handleLoadItem(getAllDB("ITEM"));
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item?itemCode="+$('#itmCode').val(),
+            type: "DELETE",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                if (resp.status === 200){
+                    alert(resp.massage);
+                    this.handleLoadItem();
+                }else {
+                    alert(resp.data);
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
     }
 
-    handleLoadItem(array){
+    handleLoadItem(){
 
-        $('#itemTbl tbody tr td').remove();
-
-        array.map((value) => {
-            var row = "<tr>" +
-                "<td>" + value._itemCode + "</td>" +
-                "<td>" + value._description + "</td>" +
-                "<td>" + value._unitPrice + "</td>" +
-                "<td>" + value._qtyOnHand + "</td>" +
-                "</tr>";
-
-            $('#itemTbl tbody').append(row);
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                console.log(resp);
+                this.handleAddData(resp.data);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
         });
 
         // disableBtn();
@@ -85,15 +136,20 @@ export class ItemController{
 
     }
 
-    handleExistingItem(){
+    handleAddData(array) {
 
-        let flag = false;
-        getAllDB("ITEM").filter((event) => {
-            if (event._itemCode === $('#itmCode').val()) {
-                flag = true;
-            }
+        $('#itemTbl tbody tr td').remove();
+
+        array.map((value) => {
+            let row = "<tr>" +
+                "<td>" + value.itemCode + "</td>" +
+                "<td>" + value.description + "</td>" +
+                "<td>" + value.unitPrice + "</td>" +
+                "<td>" + value.qtyOnHand + "</td>" +
+                "</tr>";
+
+            $('#itemTbl tbody').append(row);
         });
-        return flag;
     }
 
     handleTableClickEvent(){
@@ -114,22 +170,41 @@ export class ItemController{
     handleSearchItem(){
 
         if (!$('#itmSearch').val()){
-            this.handleLoadItem(getAllDB("ITEM"));
+            this.handleLoadItem();
             return;
         }
         let array = [];
-        let text = $('#itmSearch').val().toLowerCase();
 
-        getAllDB("ITEM").map(value => {
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
 
-            value._itemCode.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                value._description.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                    value._unitPrice.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                        value._qtyOnHand.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
+                this.handleAddData(this.handleGetMatch(array,
+                    $('#itmSearch').val().toLowerCase(), resp.data));
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
+    }
+
+    handleGetMatch(newArray, text, itemArray){
+
+        console.log(itemArray);
+        itemArray.map(value => {
+
+            value.itemCode.toLowerCase().indexOf(text) !== -1 ? newArray.push(value) :
+                value.description.toLowerCase().indexOf(text) !== -1 ? newArray.push(value) :
+                    value.unitPrice.toString().toLowerCase().indexOf(text) !== -1 ? newArray.push(value) :
+                        value.qtyOnHand.toString().toLowerCase().indexOf(text) !== -1 ? newArray.push(value) :
                             undefined;
         });
-        if (array) this.handleLoadItem(array);
-
+        return newArray;
     }
 
     handleLReloadItemDetails(){
@@ -137,7 +212,7 @@ export class ItemController{
         $(document).on('click', (event) => {
             if (event.target.className === 'form-control me-2 was-validated search')
                 setTimeout(() => {
-                    if (!$('#itmSearch').val()) this.handleLoadItem(getAllDB("ITEM"));
+                    if (!$('#itmSearch').val()) this.handleLoadItem();
                 });
         });
     }

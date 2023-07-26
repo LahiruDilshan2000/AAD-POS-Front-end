@@ -1,11 +1,11 @@
 export class Item{
     constructor(itemCode, description, unitPrice, qtyOnHand) {
-        this._itemCode = itemCode;
-        this._description = description;
-        this._unitPrice = unitPrice;
-        this._qtyOnHand = qtyOnHand;
+        this.itemCode = itemCode;
+        this.description = description;
+        this.unitPrice = unitPrice;
+        this.qtyOnHand = qtyOnHand;
     }
-    get itemCode(){ return this._itemCode}
+    /*get itemCode(){ return this._itemCode}
 
     set itemCode(itemCode){ this._itemCode = itemCode}
 
@@ -19,5 +19,5 @@ export class Item{
 
     get qtyOnHand(){ return this._qtyOnHand}
 
-    set qtyOnHand(qtyOnHand){ this._qtyOnHand = qtyOnHand}
+    set qtyOnHand(qtyOnHand){ this._qtyOnHand = qtyOnHand}*/
 }
