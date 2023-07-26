@@ -1,11 +1,11 @@
 export class Order{
-    constructor(orderId, customer, itemArray, orderDate) {
-        this._orderId = orderId;
-        this._customer = customer;
-        this._itemArray = itemArray;
-        this._orderDate = orderDate;
+    constructor(orderID, customer, orderDate, itemArray) {
+        this.orderID = orderID;
+        this.customer = customer;
+        this.orderDate = orderDate;
+        this.itemArray = itemArray;
     }
-    get orderId(){ return this._orderId}
+    /*get orderId(){ return this._orderId}
 
     set orderId(orderId){ this._orderId = orderId}
 
@@ -19,5 +19,5 @@ export class Order{
 
     get orderDate(){ return this._orderDate}
 
-    set orderDate(orderDate){ this._orderDate = orderDate}
+    set orderDate(orderDate){ this._orderDate = orderDate}*/
 }

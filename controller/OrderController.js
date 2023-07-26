@@ -1,6 +1,5 @@
 import {Order} from "../models/Order.js";
 import {Order_Item} from "../models/Order_Item.js";
-import {getAllDB, saveOrderDB} from "../db/DB.js";
 import {handleRefreshAll} from "./DashBoardController.js";
 import {handleRefreshTable} from "./RecentOrderDetailsController.js";
 
@@ -31,22 +30,36 @@ export class OrderController {
         this.handleTableClickEvent();
         this.handDateTime();
         this.handleOrderID();
-        this.handleComboBox();
+        this.handleLoadCustomerID();
+        this.handleLoadItemCode();
         this.handleQty();
     }
 
     handleOrderID() {
 
-        let arr = getAllDB("ORDER");
-        if (arr.length === 0) {
-            $('#order_id').text("MD-00001");
-            return;
-        }
-        let old_arr = arr[arr.length - 1]._orderId;
-        let t = old_arr.split("-");
-        let x = +t[1];
-        x++;
-        $('#order_id').text("MD-" + String(x).padStart(5, '0'));
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/order",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                console.log(resp.data);
+                if (resp.data.length === 0) {
+                    $('#order_id').text("MD-00001");
+                    return;
+                }
+                let old_arr = resp.data[resp.data.length - 1].orderID;
+                let t = old_arr.split("-");
+                let x = +t[1];
+                x++;
+                $('#order_id').text("MD-" + String(x).padStart(5, '0'));
+            },
+            error: (xhr,x,xs) => {
+                console.log(xs);
+            }
+        });
     }
 
     handDateTime() {
@@ -55,14 +68,43 @@ export class OrderController {
         $('#date').text(date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear());
     }
 
-    handleComboBox() {
+    handleLoadCustomerID(){
 
-        getAllDB("ITEM").map((value) => {
-            $('#itemCodeCmb').append("<option>" + value._itemCode + "</option>");
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/customer",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                resp.data.map((value) => {
+                    $('#customerCmb').append("<option>" + value.id + "</option>");
+                });
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
         });
+    }
 
-        getAllDB("DATA").map((value) => {
-            $('#customerCmb').append("<option>" + value._id + "</option>");
+    handleLoadItemCode(){
+
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                resp.data.map((value) => {
+                    $('#itemCodeCmb').append("<option>" + value.itemCode + "</option>");
+                });
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
         });
 
         document.getElementById('orderDeleteBtn').style.display = "none";
@@ -70,30 +112,56 @@ export class OrderController {
 
     handleCustomerDetails(id) {
 
-        getAllDB("DATA").map((value) => {
-            if (value._id === id) {
-                cus = value;
-                $('#customer_name').text(value._id);
-                $('#customer_address').text(value._address);
-                $('#customer_contact').text(value._contact);
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/customer",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                resp.data.map((value) => {
+                    if (value.id === id) {
+                        cus = value;
+                        $('#customer_name').text(value.id);
+                        $('#customer_address').text(value.address);
+                        $('#customer_contact').text(value.contact);
 
-                $('#customerCmb').css({borderBottom: "1px solid #ced4da"});
-                cus = value;
+                        $('#customerCmb').css({borderBottom: "1px solid #ced4da"});
+                        cus = value;
+                    }
+                });
+            },
+            error: (xhr) => {
+                console.log(xhr);
             }
         });
     }
 
     handleItemDetails(itemCode) {
 
-        getAllDB("ITEM").map((value) => {
-            if (value._itemCode === itemCode) {
-                itm = value;
-                $('#des').text(value._description);
-                $('#unit_price').text(value._unitPrice);
-                $('#qty_on_hand').text(value._qtyOnHand);
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/item",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                resp.data.map((value) => {
+                    if (value.itemCode === itemCode) {
+                        itm = value;
+                        $('#des').text(value.description);
+                        $('#unit_price').text(value.unitPrice);
+                        $('#qty_on_hand').text(value.qtyOnHand);
 
-                $('#itemCodeCmb').css({borderBottom: "1px solid #ced4da"});
-                itm = value;
+                        $('#itemCodeCmb').css({borderBottom: "1px solid #ced4da"});
+                        itm = value;
+                    }
+                });
+            },
+            error: (xhr) => {
+                console.log(xhr);
             }
         });
     }
@@ -109,7 +177,7 @@ export class OrderController {
 
     handleUpdateItem() {
 
-        let index = order_item_arr.findIndex(value => value._item._itemCode === selectedItemCode);
+        let index = order_item_arr.findIndex(value => value.item.itemCode === selectedItemCode);
 
         if ( parseInt($('#qty').val()) > parseInt($('#qty_on_hand').text())) {
 
@@ -218,10 +286,10 @@ export class OrderController {
 
         order_item_arr.map((value) => {
             var row = "<tr>" +
-                "<td>" + value._item._itemCode + "</td>" +
-                "<td>" + value._item._description + "</td>" +
-                "<td>" + value._item._qtyOnHand + "</td>" +
-                "<td>" + value._item._unitPrice + "</td>" +
+                "<td>" + value._item.itemCode + "</td>" +
+                "<td>" + value._item.description + "</td>" +
+                "<td>" + value._item.qtyOnHand + "</td>" +
+                "<td>" + value._item.unitPrice + "</td>" +
                 "<td>" + value._qty + "</td>" +
                 "<td>" + value._total + "</td>" +
                 "</tr>";
@@ -247,7 +315,7 @@ export class OrderController {
             $('#unit_price').text($(event.target).closest('tr').find('td').eq(3).text());
             $('#qty').val($(event.target).closest('tr').find('td').eq(4).text());
 
-            index = order_item_arr.findIndex(value => value._item._itemCode === $("#itemCodeCmb :selected").text());
+            index = order_item_arr.findIndex(value => value._item.itemCode === $("#itemCodeCmb :selected").text());
 
             $('#orderAddBtn').text('Update');
             $('#orderAddBtn').css({

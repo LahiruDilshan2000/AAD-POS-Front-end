@@ -1,11 +1,10 @@
 import {Order} from "../models/Order.js";
-import {getAllDB} from "../db/DB.js";
 
 export class DashBoardController {
 
     constructor() {
-        this.handleTableLoad();
-        this.handleLabelData();
+        /*this.handleTableLoad();
+        this.handleLabelData();*/
     }
 
     handleTableLoad() {

@@ -1,4 +1,3 @@
-import {getAllDB} from "../db/DB.js";
 
 export class RecentOrderDetailsController{
 
@@ -13,9 +12,9 @@ export class RecentOrderDetailsController{
         $('#rOrderSearch').on('keyup', () => {
             this.handleSearchRecentOrder();
         });
-        this.handleLReloadRecentOrderDetails();
+        /*this.handleLReloadRecentOrderDetails();
         this.handleLoadTable(getAllDB("ORDER"));
-        this.handleTableButtonClick();
+        this.handleTableButtonClick();*/
     }
 
     handleFilterClickEvent(event){

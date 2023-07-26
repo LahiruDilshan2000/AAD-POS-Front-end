@@ -114,7 +114,6 @@ export class ItemController{
                 "Content-Type": "application/json"
             },
             success: (resp) => {
-                console.log(resp);
                 this.handleAddData(resp.data);
             },
             error: (xhr) => {
