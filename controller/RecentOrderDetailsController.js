@@ -12,9 +12,9 @@ export class RecentOrderDetailsController{
         $('#rOrderSearch').on('keyup', () => {
             this.handleSearchRecentOrder();
         });
-        /*this.handleLReloadRecentOrderDetails();
+        this.handleLReloadRecentOrderDetails();
         this.handleLoadTable(getAllDB("ORDER"));
-        this.handleTableButtonClick();*/
+        this.handleTableButtonClick();
     }
 
     handleFilterClickEvent(event){
@@ -31,14 +31,14 @@ export class RecentOrderDetailsController{
 
         array.map(value => {
 
-            let count = value._itemArray.length;
+            let count = value.itemArray.length;
             let total = 0;
             for (let i = 0; i < count; i++) {
 
                 total += value._itemArray[i]._total;
             }
             var row = "<tr>" +
-                "<td>" + value._orderId + "</td>" +
+                "<td>" + value.orderId + "</td>" +
                 "<td>" + value._customer._id + "</td>" +
                 "<td>" + value._customer._name + "</td>" +
                 "<td>" + total + "</td>" +
