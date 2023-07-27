@@ -1,5 +1,6 @@
+var detailsArray = [];
 
-export class RecentOrderDetailsController{
+export class RecentOrderDetailsController {
 
     constructor() {
 
@@ -10,126 +11,131 @@ export class RecentOrderDetailsController{
             this.handleSearchRecentOrder();
         });
         $('#rOrderSearch').on('keyup', () => {
-            this.handleSearchRecentOrder();
+             this.handleSearchRecentOrder();
         });
         this.handleLReloadRecentOrderDetails();
-        this.handleLoadTable(getAllDB("ORDER"));
+        this.handleLoadTable();
         this.handleTableButtonClick();
     }
 
-    handleFilterClickEvent(event){
+    handleFilterClickEvent(event) {
 
-        if(event.target.className === 'filter'){
+        if (event.target.className === 'filter') {
             // $('.filter').css({opacity : '0', right : '-200vw'});
-            $('.filter').css({opacity : '0', zIndex : '-1'});
+            $('.filter').css({opacity: '0', zIndex: '-1'});
         }
     }
 
-    handleLoadTable(array){
+    handleLoadTable() {
+
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/query",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                this.handleAddRecentData(resp.data);
+                detailsArray = resp.data;
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
+
+    }
+
+    handleAddRecentData(array) {
 
         $('#recentOrderTbl tbody tr').remove();
 
         array.map(value => {
 
-            let count = value.itemArray.length;
-            let total = 0;
-            for (let i = 0; i < count; i++) {
-
-                total += value._itemArray[i]._total;
-            }
             var row = "<tr>" +
-                "<td>" + value.orderId + "</td>" +
-                "<td>" + value._customer._id + "</td>" +
-                "<td>" + value._customer._name + "</td>" +
-                "<td>" + total + "</td>" +
-                "<td>" + value._orderDate + "</td>" +
+                "<td>" + value.orderID + "</td>" +
+                "<td>" + value.customerID + "</td>" +
+                "<td>" + value.customerName + "</td>" +
+                "<td>" + value.total + "</td>" +
+                "<td>" + value.date + "</td>" +
                 "<td><div>View</div></td>" +
                 "</tr>";
 
             $('#recentOrderTbl tbody').prepend(row);
         });
-
     }
 
-    handleTableButtonClick(){
+    handleTableButtonClick() {
 
         $('#recentOrderTbl tbody').on('click', 'div', (event) => {
             this.handleRecentOrderDetails($(event.target).closest('tr').find('td').eq(0).text());
         });
     }
 
-    handleRecentOrderDetails(order_id){
+    handleRecentOrderDetails(orderID) {
 
-        getAllDB("ORDER").map(value => {
-            if (value._orderId === order_id){
+        detailsArray.map(value => {
+            if (value.orderID === orderID) {
 
-                $('#recentOrder_id').text(value._orderId);
-                $('#recentOrderDate').text(value._orderDate);
-                $('#cusID').text(value._customer._id);
-                $('#cusName').text(value._customer._name);
+                $('#recentOrder_id').text(value.orderID);
+                $('#recentOrderDate').text(value.date);
+                $('#cusID').text(value.customerID);
+                $('#cusName').text(value.customerName);
 
                 $('#recentTbl tbody tr').remove();
 
-                value._itemArray.map(value1 => {
-                    var row = "<tr>" +
-                        "<td>" + value1._item._itemCode + "</td>" +
-                        "<td>" + value1._item._description + "</td>" +
-                        "<td>" + value1._item._unitPrice + "</td>" +
-                        "<td>" + value1._qty+ "</td>" +
-                        "<td>" + value1._total + "</td>" +
+                value.itemList.map(value1 => {
+                    let row = "<tr>" +
+                        "<td>" + value1.itemCode + "</td>" +
+                        "<td>" + value1.description + "</td>" +
+                        "<td>" + value1.unitPrice + "</td>" +
+                        "<td>" + value1.qtyOnHand + "</td>" +
+                        "<td>" + parseInt(value1.unitPrice) * parseInt(value1.qtyOnHand) + "</td>" +
                         "</tr>";
 
                     $('#recentTbl tbody').prepend(row);
                 });
                 // $('.filter').css({opacity : '1', right : '0'});
-                $('.filter').css({opacity : '1', zIndex : '5000'});
+                $('.filter').css({opacity: '1', zIndex: '5000'});
             }
             return;
         });
     }
 
-    handleSearchRecentOrder(){
+    handleSearchRecentOrder() {
 
-        if (!$('#rOrderSearch').val()){
-            this.handleLoadTable(getAllDB("ORDER"));
+        if (!$('#rOrderSearch').val()) {
+            this.handleLoadTable();
             return;
         }
         let array = [];
         let text = $('#rOrderSearch').val().toLowerCase();
 
-        getAllDB("ORDER").map(value => {
+        detailsArray.map(value => {
 
-            value._orderId.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                value._customer._id.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                    value._customer._name.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                      this.handleGetTotal(value._itemArray).indexOf(text) !== -1 ? array.push(value) :
-                          value._orderDate.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
-                            undefined;
+            value.orderID.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
+                value.customerID.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
+                    value.customerName.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
+                        value.total.toString().indexOf(text) !== -1 ? array.push(value) :
+                            value.date.toLowerCase().indexOf(text) !== -1 ? array.push(value) :
+                                undefined;
         });
-        if (array)this.handleLoadTable(array);
-    }
-    handleGetTotal(array){
-        let total = 0;
-
-        array.map(value => {
-            total += value._total;
-        });
-        return total.toString();
+        if (array) this.handleAddRecentData(array);
     }
 
-    handleLReloadRecentOrderDetails(){
+    handleLReloadRecentOrderDetails() {
 
         $(document).on('click', (event) => {
             if (event.target.className === 'form-control was-validated search')
                 setTimeout(() => {
-                    if (!$('#rOrderSearch').val()) this.handleLoadTable(getAllDB("ORDER"));
+                    if (!$('#rOrderSearch').val()) this.handleLoadTable();
                 });
         });
     }
 }
 
-export function handleRefreshTable(){
-    recentOrderDetailsController.handleLoadTable(getAllDB("ORDER"));
+export function handleRefreshTable() {
+    recentOrderDetailsController.handleLoadTable();
 }
 
 let recentOrderDetailsController = new RecentOrderDetailsController();

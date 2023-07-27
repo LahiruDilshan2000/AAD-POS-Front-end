@@ -1,30 +1,43 @@
-import {Order} from "../models/Order.js";
+var recentDataArray = [];
 
 export class DashBoardController {
 
     constructor() {
-        /*this.handleTableLoad();
-        this.handleLabelData();*/
+        this.handleTableLoad();
     }
 
     handleTableLoad() {
 
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/query",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                this.handleAddRecentData(resp.data);
+                recentDataArray = resp.data;
+                this.handleLabelData();
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
+    }
+
+    handleAddRecentData(array){
+
         $('#orderDetailTbl tbody tr').remove();
 
-        getAllDB("ORDER").map(value => {
+        array.map(value => {
 
-            let count = value._itemArray.length;
-            let total = 0;
-            for (let i = 0; i < count; i++) {
-
-                total += value._itemArray[i]._total;
-            }
-            var row = "<tr>" +
-                "<td>" + value._orderId + "</td>" +
-                "<td>" + value._customer._id + "</td>" +
-                "<td>" + value._customer._name + "</td>" +
-                "<td>" + total + "</td>" +
-                "<td>" + value._orderDate + "</td>" +
+            let row = "<tr>" +
+                "<td>" + value.orderID + "</td>" +
+                "<td>" + value.customerID + "</td>" +
+                "<td>" + value.customerName + "</td>" +
+                "<td>" + value.total + "</td>" +
+                "<td>" + value.date + "</td>" +
                 "<td><div>Payed</div></td>" +
                 "</tr>";
 
@@ -34,19 +47,34 @@ export class DashBoardController {
 
     handleLabelData() {
 
-        $('#totalCustomer').text(getAllDB("DATA").length);
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/customer",
+            type: "GET",
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                $('#totalCustomer').text(resp.data.length);
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
 
         let count = 0;
-        var todayIncome = 0;
+        let todayIncome = 0;
 
-        var date = new Date();
-        var nowDate = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+        let date = new Date();
+        let month = eval(date.getMonth() + 1).toString();
+        let day = date.getDate().toString();
+        day = day.length === 1 ? "0"+day : day;
+        month = month.length === 1 ? "0"+month : month;
+        let nowDate = date.getFullYear()+ "-" + month + "-" + day;
 
-        getAllDB("ORDER").map(value => {
-            if (value._orderDate === nowDate) {
-                for (let i = 0; i < value._itemArray.length; i++) {
-                    todayIncome += parseInt(value._itemArray[i]._total)
-                }
+        recentDataArray.map(value => {
+            if (value.date === nowDate) {
+                todayIncome += value.total;
                 count++;
             }
         });

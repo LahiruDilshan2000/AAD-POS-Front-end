@@ -65,7 +65,11 @@ export class OrderController {
     handDateTime() {
 
         let date = new Date();
-        $('#date').text(date.getFullYear()+ "-" + eval(date.getMonth() + 1) + "-" + date.getDate());
+        let month = eval(date.getMonth() + 1).toString();
+        let day = date.getDate().toString();
+        day = day.length === 1 ? "0"+day : day;
+        month = month.length === 1 ? "0"+month : month;
+        $('#date').text(date.getFullYear()+ "-" + month + "-" + day);
     }
 
     handleLoadCustomerID(){
@@ -78,6 +82,8 @@ export class OrderController {
                 "Content-Type": "application/json"
             },
             success: (resp) => {
+                $('#customerCmb option').remove();
+                $('#customerCmb').append("<option>" + "Choose..." + "</option>");
                 resp.data.map((value) => {
                     $('#customerCmb').append("<option>" + value.id + "</option>");
                 });
@@ -98,6 +104,8 @@ export class OrderController {
                 "Content-Type": "application/json"
             },
             success: (resp) => {
+                $('#itemCodeCmb option').remove();
+                $('#itemCodeCmb').append("<option>" + "Choose..." + "</option>");
                 resp.data.map((value) => {
                     $('#itemCodeCmb').append("<option>" + value.itemCode + "</option>");
                 });
@@ -123,7 +131,7 @@ export class OrderController {
                 resp.data.map((value) => {
                     if (value.id === id) {
                         cus = value;
-                        $('#customer_name').text(value.id);
+                        $('#customer_name').text(value.name);
                         $('#customer_address').text(value.address);
                         $('#customer_contact').text(value.contact);
 
@@ -305,8 +313,8 @@ export class OrderController {
         this.handleLoadTable();
         this.handleOrderID();
         this.handDateTime();
-        /*handleRefreshAll();
-        handleRefreshTable();*/
+        handleRefreshAll();
+        handleRefreshTable();
 
     }
 
@@ -365,10 +373,12 @@ export class OrderController {
 export function handleReloadCustomerDetails() {
     orderController.handleLoadCustomerID();
     orderController.handDateTime();
+    orderController.handleReloadDetails();
 }
 export function handleReloadItemDetails() {
     orderController.handleLoadItemCode();
     orderController.handDateTime();
+    orderController.handleReloadDetails();
 }
 
 let orderController = new OrderController();
