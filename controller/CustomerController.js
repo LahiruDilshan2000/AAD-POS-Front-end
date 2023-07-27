@@ -1,4 +1,5 @@
 import {Customer} from "../models/Customer.js";
+import {handleReloadCustomerDetails} from "./OrderController.js";
 
 export class CustomerController {
     constructor() {
@@ -47,6 +48,7 @@ export class CustomerController {
                 if (resp.status === 200){
                     alert(resp.massage);
                     this.handleLoadCustomer();
+                    handleReloadCustomerDetails();
                 }else {
                     alert(resp.data);
                 }
@@ -96,6 +98,7 @@ export class CustomerController {
                 if (resp.status === 200){
                     alert(resp.massage);
                     this.handleLoadCustomer();
+                    handleReloadCustomerDetails();
                 }else {
                     alert(resp.data);
                 }

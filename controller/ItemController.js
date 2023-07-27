@@ -1,4 +1,5 @@
 import {Item} from "../models/Item.js";
+import {handleReloadItemDetails} from "./OrderController.js";
 
 export class ItemController{
     constructor() {
@@ -45,6 +46,7 @@ export class ItemController{
                 if (resp.status === 200){
                     alert(resp.massage);
                     this.handleLoadItem();
+                    handleReloadItemDetails();
                 }else {
                     alert(resp.data);
                 }
@@ -94,6 +96,7 @@ export class ItemController{
                 if (resp.status === 200){
                     alert(resp.massage);
                     this.handleLoadItem();
+                    handleReloadItemDetails();
                 }else {
                     alert(resp.data);
                 }

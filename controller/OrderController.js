@@ -1,5 +1,6 @@
 import {Order} from "../models/Order.js";
 import {Order_Item} from "../models/Order_Item.js";
+import {OrderDetails} from "../models/OrderDetails.js";
 import {handleRefreshAll} from "./DashBoardController.js";
 import {handleRefreshTable} from "./RecentOrderDetailsController.js";
 
@@ -45,7 +46,6 @@ export class OrderController {
                 "Content-Type": "application/json"
             },
             success: (resp) => {
-                console.log(resp.data);
                 if (resp.data.length === 0) {
                     $('#order_id').text("MD-00001");
                     return;
@@ -64,8 +64,8 @@ export class OrderController {
 
     handDateTime() {
 
-        var date = new Date();
-        $('#date').text(date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear());
+        let date = new Date();
+        $('#date').text(date.getFullYear()+ "-" + eval(date.getMonth() + 1) + "-" + date.getDate());
     }
 
     handleLoadCustomerID(){
@@ -211,7 +211,6 @@ export class OrderController {
 
         } else {
 
-
             order_item_arr[index]._qty = parseInt(order_item_arr[index]._qty) + parseInt($('#qty').val());
             order_item_arr[index]._total = parseInt(order_item_arr[index]._qty) * parseInt($('#unit_price').text());
         }
@@ -236,10 +235,9 @@ export class OrderController {
 
     handleDeleteItem(){
 
-        order_item_arr.splice(order_item_arr.findIndex(value => value._item._itemCode === selectedItemCode), 1);
+        order_item_arr.splice(order_item_arr.findIndex(value => value._item.itemCode === selectedItemCode), 1);
 
         this.handleLoadTable();
-
         this.handleClearFunction();
 
         if (order_item_arr.length === 0){
@@ -253,7 +251,7 @@ export class OrderController {
 
     handleIsExists() {
 
-        return order_item_arr.findIndex(value => value._item._itemCode === $('#itemCodeCmb :selected').text());
+        return order_item_arr.findIndex(value => value._item.itemCode === $('#itemCodeCmb :selected').text());
 
     }
 
@@ -264,7 +262,37 @@ export class OrderController {
             return;
         }
 
-        saveOrderDB(new Order($('#order_id').text(), cus, order_item_arr, $('#date').text()));
+        let itemArray = [];
+
+        order_item_arr.map(value => {
+            itemArray.push(new OrderDetails($('#order_id').text(), value._item.itemCode, value._item.unitPrice, value._qty, value._total));
+        });
+
+        let obj = JSON.stringify(new Order($('#order_id').text(), cus.id, $('#date').text(), itemArray));
+
+        $.ajax({
+            url: "http://localhost:8080/Web_Pos_Backend/order",
+            type: "POST",
+            data: obj,
+            dataType: "json",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            success: (resp) => {
+                if (resp.status === 200){
+                    alert(resp.massage);
+                    this.handleReloadDetails();
+                }else {
+                    alert(resp.data);
+                }
+            },
+            error: (xhr) => {
+                console.log(xhr);
+            }
+        });
+    }
+
+    handleReloadDetails(){
 
         order_item_arr = [];
 
@@ -276,8 +304,10 @@ export class OrderController {
 
         this.handleLoadTable();
         this.handleOrderID();
-        handleRefreshAll();
-        handleRefreshTable();
+        this.handDateTime();
+        /*handleRefreshAll();
+        handleRefreshTable();*/
+
     }
 
     handleLoadTable() {
@@ -285,7 +315,7 @@ export class OrderController {
         $('#orderTbl tbody tr').remove();
 
         order_item_arr.map((value) => {
-            var row = "<tr>" +
+            let row = "<tr>" +
                 "<td>" + value._item.itemCode + "</td>" +
                 "<td>" + value._item.description + "</td>" +
                 "<td>" + value._item.qtyOnHand + "</td>" +
@@ -304,7 +334,7 @@ export class OrderController {
         $('#orderTbl tbody').on('click', 'tr', (event) => {
 
             var arr = document.getElementById('itemCodeCmb');
-            for (var i = 0; i < arr.length; i++){
+            for (let i = 0; i < arr.length; i++){
                 if(arr[i].value === $(event.target).closest('tr').find('td').eq(0).text()){
                     arr.selectedIndex = i;
                 }
@@ -332,5 +362,13 @@ export class OrderController {
         });
     }
 }
+export function handleReloadCustomerDetails() {
+    orderController.handleLoadCustomerID();
+    orderController.handDateTime();
+}
+export function handleReloadItemDetails() {
+    orderController.handleLoadItemCode();
+    orderController.handDateTime();
+}
 
-new OrderController();
+let orderController = new OrderController();
