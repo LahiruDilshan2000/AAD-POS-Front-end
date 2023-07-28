@@ -128,6 +128,7 @@ export class OrderController {
                 "Content-Type": "application/json"
             },
             success: (resp) => {
+                this.handleCustomerLabelColor('#000');
                 resp.data.map((value) => {
                     if (value.id === id) {
                         cus = value;
@@ -156,6 +157,7 @@ export class OrderController {
                 "Content-Type": "application/json"
             },
             success: (resp) => {
+                this.handleItemLabelColor('#000');
                 resp.data.map((value) => {
                     if (value.itemCode === itemCode) {
                         itm = value;
@@ -234,11 +236,21 @@ export class OrderController {
         document.getElementById('orderDeleteBtn').style.display = "none";
         $('#orderAddBtn').text('Add');
         $('#orderAddBtn').css({background: '#0d6efd', border: '#0d6efd'});
+
         $('#des').text('.');
         $('#qty_on_hand').text(".");
         $('#unit_price').text(".");
         $('#qty').val("");
 
+        this.handleItemLabelColor('#fff');
+
+    }
+
+    handleCustomerLabelColor(color){
+
+        $('#customer_name').css({'color': color});
+        $('#customer_address').css({'color': color});
+        $('#customer_contact').css({'color': color});
     }
 
     handleDeleteItem(){
@@ -310,12 +322,21 @@ export class OrderController {
         $('#customer_address').text(".");
         $('#customer_contact').text(".");
 
+        this.handleCustomerLabelColor('#fff');
+
         this.handleLoadTable();
         this.handleOrderID();
         this.handDateTime();
         handleRefreshAll();
         handleRefreshTable();
 
+    }
+
+    handleItemLabelColor(color){
+
+        $('#des').css({'color': color});
+        $('#qty_on_hand').css({'color': color});
+        $('#unit_price').css({'color': color});
     }
 
     handleLoadTable() {
